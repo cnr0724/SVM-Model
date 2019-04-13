@@ -1,0 +1,47 @@
+Source: https://www.coursera.org/learn/machine-learning/home/info
+
+Machine learning
+-Grew out of work in AI
+-New capability for computers
+
+Examples:
+-Database mining
+  Large datasets from growth of automation/web.
+  E.g., Web click data, medical records, biology, engineering.
+  -Applications that cannot be programmed by hand.
+  E.g., Autonomous helicopter, handwriting recognition, most of Natural Language Processing(NLP),
+        Computer Vision.
+  -Self-customizing programs
+  E.g., Amazon, Netflix product recommendations.
+  -Understanding human learning (brain, real AI).
+  
+Machine learning definition
+Arthur Samuel:
+Machine learning: Field of study that gives computers the ability to learn without being
+explicitly programmed.
+(하나하나 프로그래밍을 하지 않아도 배울 수 있는 능력을 컴퓨터에게 주는 방법에 대한 분야.)
+Tom Mitchell:
+Well-posed learning problem: A computer program is said to learn from experience E with respect
+to some task T and some performance measure P, if its performance on T, as measured by P,
+improves with experience E.
+(좋은 러닝 문제: 컴퓨터 프로그램은 어떤 태스크 T와 결과 평가 기준인 P에 대한 경험 E가 있다고 할 때,
+P로 평가된 T에 대한 성능이 경험 E로부터 개선되었을 때 배웠다고 할 수 있다.)
+  
+Machine learning algorithms:
+-Supervised learning(지도 학습)
+-Unsupervised learning(비지도 학습)
+
+Supervised learning
+"Right answers" given.
+For regression and classification problem.
+Regression problem:
+Predict results within a continuous output;
+we are trying to map input variables to some continuous function.
+Classification problem:
+Predict results in a discrete output;
+we are trying to map input variables into discrete categories.
+Regression과 Classification은 예측을 한다는 점에선 동일한데 결과가 속하는 카테고리가
+연속적인지 비연속적인지에 따라 나뉨. 연속적인 건 가격대나 나이 같은 게 있고 비연속적인 건 병의 유무 같은 것.
+
+Learning algorithm deals with infinite number of features (or attributes).
+-> How?
