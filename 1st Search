@@ -1,0 +1,60 @@
+import numpy as np
+from sklearn import svm, naive_bayes
+import tensorflow as tf
+from tensorflow import keras
+from keras.utils import to_categorical
+
+mnist=keras.datasets.mnist
+
+(train_images, train_labels), (test_images,test_labels)=mnist.load_data()
+train_images=train_images.astype(np.float32)/255.
+train_images=train_images[:6000]
+train_labels=train_labels[:6000]
+test_images=test_images.astype(np.float32)/255.
+test_images=test_images[:1000]
+test_labels=test_labels[:1000]
+
+def imageFlattening():
+    train_sample_n=len(train_images)
+    train_images_SVM=train_images.reshape((train_sample_n,-1))
+    test_sample_n=len(test_images)
+    test_images_SVM=test_images.reshape((test_sample_n,-1))
+    return train_images_SVM, test_images_SVM
+
+def imageChangeForCNN():
+    train_images_CNN=np.expand_dims(train_images, axis=-1)
+    test_images_CNN=np.expand_dims(test_images, axis=-1)
+    train_labels_CNN=to_categorical(train_labels,10)
+    test_labels_CNN=to_categorical(test_labels,10)
+    return train_images_CNN, train_labels_CNN, test_images_CNN, test_labels_CNN
+
+def CNN():
+    model=keras.Sequential()
+    model.add(keras.layers.Conv2D(filters=16, kernel_size=3,activation=tf.nn.relu, padding='SAME', input_shape=(28,28,1)))
+    model.add(keras.layers.MaxPool2D(padding='SAME'))
+    model.add(keras.layers.Conv2D(filters=16, kernel_size=3, activation=tf.nn.relu, padding='SAME'))
+    model.add(keras.layers.MaxPool2D(padding='SAME'))
+    model.add(keras.layers.Flatten())
+    model.add(keras.layers.Dense(64, activation=tf.nn.relu))
+    model.add(keras.layers.Dense(10))
+    return model
+
+svmModel=svm.SVC(gamma='auto')
+nbModel=naive_bayes.GaussianNB()
+cnnModel=CNN()
+
+train_images_SVM, test_images_SVM=imageFlattening()
+svmModel.fit(train_images_SVM,train_labels)
+test_acc_svm=svmModel.score(test_images_SVM, test_labels)
+print("Test accuracy for SVM: ",test_acc_svm)
+
+train_images_nb, test_images_nb=imageFlattening()
+nbModel.fit(train_images_nb,train_labels)
+test_acc_nb=nbModel.score(test_images_nb, test_labels)
+print("Test accuracy for nb: ",test_acc_nb)
+
+cnnModel.compile(optimizer='adam',loss='mse',metrics=['accuracy'])
+train_images_CNN, train_labels_CNN, test_images_CNN, test_labels_CNN=imageChangeForCNN()
+cnnModel.fit(train_images_CNN, train_labels_CNN, epochs=1, batch_size=500)
+loss, test_acc_CNN = cnnModel.evaluate(test_images_CNN,test_labels_CNN)
+print("Test accuracy for CNN: ",test_acc_CNN)
