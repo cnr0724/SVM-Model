@@ -8,20 +8,28 @@ mnist=keras.datasets.mnist
 
 (train_images, train_labels), (test_images,test_labels)=mnist.load_data()
 train_images=train_images.astype(np.float32)/255.
-train_images=train_images[:6000]
-train_labels=train_labels[:6000]
 test_images=test_images.astype(np.float32)/255.
-test_images=test_images[:1000]
-test_labels=test_labels[:1000]
 
-def imageFlattening():
+def arraySlice(array):
+    length=len(array)
+    lengthten=int(length/10)
+    start=0
+    end=lengthten
+    newArray=[]
+    for i in range(10):
+        newArray.append(array[start:end])
+        start=end
+        end+=lengthten
+    return newArray
+
+def imageFlattening(train_images, test_images):
     train_sample_n=len(train_images)
     train_images_SVM=train_images.reshape((train_sample_n,-1))
     test_sample_n=len(test_images)
     test_images_SVM=test_images.reshape((test_sample_n,-1))
     return train_images_SVM, test_images_SVM
 
-def imageChangeForCNN():
+def imageChangeForCNN(train_images, train_labels, test_images,test_labels):
     train_images_CNN=np.expand_dims(train_images, axis=-1)
     test_images_CNN=np.expand_dims(test_images, axis=-1)
     train_labels_CNN=to_categorical(train_labels,10)
@@ -36,6 +44,7 @@ def CNN():
     model.add(keras.layers.MaxPool2D(padding='SAME'))
     model.add(keras.layers.Flatten())
     model.add(keras.layers.Dense(64, activation=tf.nn.relu))
+    model.add(keras.layers.Dropout())
     model.add(keras.layers.Dense(10))
     return model
 
@@ -43,29 +52,38 @@ totalSVM=0
 totalNB=0
 totalCNN=0
 
-train_images_CNN, train_labels_CNN, test_images_CNN, test_labels_CNN = imageChangeForCNN()
-
-for i in range(10):
+def test(train_images, train_labels, test_images,test_labels, i):
     svmModel = svm.SVC(gamma='auto')
     nbModel = naive_bayes.GaussianNB()
     cnnModel = CNN()
 
-    train_images_SVM, test_images_SVM = imageFlattening()
+    train_images_SVM, test_images_SVM = imageFlattening(train_images, test_images)
     svmModel.fit(train_images_SVM, train_labels)
     test_acc_svm = svmModel.score(test_images_SVM, test_labels)
-    print(i+1, "th test accuracy for SVM: ", test_acc_svm)
-    totalSVM+=test_acc_svm
+    print(i + 1, "th test accuracy for SVM: ", test_acc_svm)
 
-    train_images_nb, test_images_nb = imageFlattening()
+    train_images_nb, test_images_nb = imageFlattening(train_images, test_images)
     nbModel.fit(train_images_nb, train_labels)
     test_acc_nb = nbModel.score(test_images_nb, test_labels)
-    print(i+1, "th test accuracy for nb: ", test_acc_nb)
-    totalNB+=test_acc_nb
+    print(i + 1, "th test accuracy for nb: ", test_acc_nb)
 
     cnnModel.compile(optimizer='adam', loss='mse', metrics=['accuracy'])
+    train_images_CNN, train_labels_CNN, test_images_CNN, test_labels_CNN = imageChangeForCNN(train_images, train_labels, test_images,test_labels)
     cnnModel.fit(train_images_CNN, train_labels_CNN, epochs=1, batch_size=500)
     loss, test_acc_CNN = cnnModel.evaluate(test_images_CNN, test_labels_CNN)
-    print(i+1,"th test accuracy for CNN: ", test_acc_CNN)
+    print(i + 1, "th test accuracy for CNN: ", test_acc_CNN)
+
+    return test_acc_svm, test_acc_nb, test_acc_CNN
+
+train_images_slice=arraySlice(train_images)
+train_labels_slice=arraySlice(train_labels)
+# test_images_slice=arraySlice(test_images)
+# test_iabels_slice=arraySlice(test_labels)
+
+for i in range(10):
+    test_acc_svm, test_acc_nb, test_acc_CNN=test(train_images_slice[i],train_labels_slice[i],test_images, test_labels, i)
+    totalSVM+=test_acc_svm
+    totalNB+=test_acc_nb
     totalCNN+=test_acc_CNN
 
 print("Average test accuracy for SVM: ",totalSVM/10)
