@@ -39,22 +39,35 @@ def CNN():
     model.add(keras.layers.Dense(10))
     return model
 
-svmModel=svm.SVC(gamma='auto')
-nbModel=naive_bayes.GaussianNB()
-cnnModel=CNN()
+totalSVM=0
+totalNB=0
+totalCNN=0
 
-train_images_SVM, test_images_SVM=imageFlattening()
-svmModel.fit(train_images_SVM,train_labels)
-test_acc_svm=svmModel.score(test_images_SVM, test_labels)
-print("Test accuracy for SVM: ",test_acc_svm)
+train_images_CNN, train_labels_CNN, test_images_CNN, test_labels_CNN = imageChangeForCNN()
 
-train_images_nb, test_images_nb=imageFlattening()
-nbModel.fit(train_images_nb,train_labels)
-test_acc_nb=nbModel.score(test_images_nb, test_labels)
-print("Test accuracy for nb: ",test_acc_nb)
+for i in range(10):
+    svmModel = svm.SVC(gamma='auto')
+    nbModel = naive_bayes.GaussianNB()
+    cnnModel = CNN()
 
-cnnModel.compile(optimizer='adam',loss='mse',metrics=['accuracy'])
-train_images_CNN, train_labels_CNN, test_images_CNN, test_labels_CNN=imageChangeForCNN()
-cnnModel.fit(train_images_CNN, train_labels_CNN, epochs=1, batch_size=500)
-loss, test_acc_CNN = cnnModel.evaluate(test_images_CNN,test_labels_CNN)
-print("Test accuracy for CNN: ",test_acc_CNN)
+    train_images_SVM, test_images_SVM = imageFlattening()
+    svmModel.fit(train_images_SVM, train_labels)
+    test_acc_svm = svmModel.score(test_images_SVM, test_labels)
+    print(i+1, "th test accuracy for SVM: ", test_acc_svm)
+    totalSVM+=test_acc_svm
+
+    train_images_nb, test_images_nb = imageFlattening()
+    nbModel.fit(train_images_nb, train_labels)
+    test_acc_nb = nbModel.score(test_images_nb, test_labels)
+    print(i+1, "th test accuracy for nb: ", test_acc_nb)
+    totalNB+=test_acc_nb
+
+    cnnModel.compile(optimizer='adam', loss='mse', metrics=['accuracy'])
+    cnnModel.fit(train_images_CNN, train_labels_CNN, epochs=1, batch_size=500)
+    loss, test_acc_CNN = cnnModel.evaluate(test_images_CNN, test_labels_CNN)
+    print(i+1,"th test accuracy for CNN: ", test_acc_CNN)
+    totalCNN+=test_acc_CNN
+
+print("Average test accuracy for SVM: ",totalSVM/10)
+print("Average test accuracy for NB: ",totalNB/10)
+print("Average test accuracy for CNN: ",totalCNN/10)
