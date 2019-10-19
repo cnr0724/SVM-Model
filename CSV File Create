@@ -1,0 +1,18 @@
+import numpy as np
+from pandas import DataFrame
+
+np.random.seed(500)
+X = np.random.randn(150,2)
+Y = np.logical_xor(X[:, 0] > 0, X[:, 1] > 0)
+
+data_XOR={'x_cor':X[:,0], 'y_cor':X[:,1], 'label':Y}
+data_XOR_df=DataFrame(data_XOR)
+
+data_XOR_df.to_csv('C:\\Users\\Nuree\\Desktop\\졸논\\data_XOR.csv', sep=',')
+
+Y=np.logical_and(X[:, 0] > 0, X[:, 1] > 0)
+
+data_AND={'x_cor':X[:,0], 'y_cor':X[:,1], 'label':Y}
+data_AND_df=DataFrame(data_AND)
+
+data_AND_df.to_csv('C:\\Users\\Nuree\\Desktop\\졸논\\data_AND.csv',sep=',')
