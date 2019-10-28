@@ -1,0 +1,145 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.svm import SVC
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_iris
+from tensorflow import keras
+
+def main():
+    data_XOR=pd.read_csv('C:\\Users\\Nuree\\Desktop\\졸논\\data_XOR.csv')
+    X_XOR = data_XOR[['x_cor', 'y_cor']].to_numpy()
+    Y_XOR = data_XOR['label'].to_numpy()
+    X_XOR_train, X_XOR_test, Y_XOR_train, Y_XOR_test = train_test_split(X_XOR, Y_XOR, test_size=0.2)
+
+    data_AND=pd.read_csv('C:\\Users\\Nuree\\Desktop\\졸논\\data_AND.csv')
+    X_AND = data_AND[['x_cor', 'y_cor']].to_numpy()
+    Y_AND = data_AND['label'].to_numpy()
+    X_AND_train, X_AND_test, Y_AND_train, Y_AND_test = train_test_split(X_AND,Y_AND,test_size=0.2)
+
+    data_iris=load_iris()
+    X_iris_train, X_iris_test, Y_iris_train, Y_iris_test = train_test_split(data_iris.data, data_iris.target, test_size=0.2)
+
+    lst_XOR = [X_XOR_train, Y_XOR_train, X_XOR_test, Y_XOR_test, "XOR"]
+    lst_AND = [X_AND_train, Y_AND_train, X_AND_test, Y_AND_test, "AND"]
+    data_lst = [lst_XOR, lst_AND]
+
+    data_mnist=keras.datasets.mnist
+    (train_images, train_labels), (test_images, test_labels) = data_mnist.load_data()
+    train_images = train_images[:4000]
+    train_labels = train_labels[:4000]
+    test_images=test_images[:1000]
+    test_labels=test_labels[:1000]
+    train_images = train_images.astype(np.float32) / 255.
+    test_images = test_images.astype(np.float32) / 255.
+    train_sample_n = len(train_images)
+    train_images = train_images.reshape((train_sample_n, -1))
+    test_sample_n = len(test_images)
+    test_images = test_images.reshape((test_sample_n, -1))
+
+    #MNIST 실험
+    svm_linear_mnist = SVC(kernel='linear', gamma='auto')
+    svm_kernel_rbf_mnist = SVC(kernel='rbf', gamma='auto')
+    svm_kernel_poly_mnist = SVC(kernel='poly', gamma='auto')
+    svm_kernel_sigmoid_mnist = SVC(kernel='sigmoid', gamma='auto')
+
+    svm_linear_mnist.fit(train_images, train_labels)
+    svm_kernel_rbf_mnist.fit(train_images, train_labels)
+    svm_kernel_poly_mnist.fit(train_images, train_labels)
+    svm_kernel_sigmoid_mnist.fit(train_images, train_labels)
+
+    linearA = svm_linear_mnist.score(test_images, test_labels)
+    rbfA = svm_kernel_rbf_mnist.score(test_images, test_labels)
+    polyA = svm_kernel_poly_mnist.score(test_images, test_labels)
+    sigmoidA = svm_kernel_sigmoid_mnist.score(test_images, test_labels)
+    print("The accuracy of MNIST dataset:\nLinear kernel: ", linearA, "\nRBF kernel: ", rbfA,
+          "\nPolynomial kernel: ", polyA, "\nSigmoid kernel: ", sigmoidA, "\n")
+
+    #iris 테스트
+    svm_linear_iris = SVC(kernel='linear', gamma='auto')
+    svm_kernel_rbf_iris = SVC(kernel='rbf', gamma='auto')
+    svm_kernel_poly_iris = SVC(kernel='poly', gamma='auto')
+    svm_kernel_sigmoid_iris = SVC(kernel='sigmoid', gamma='auto')
+
+    svm_linear_iris.fit(X_iris_train, Y_iris_train)
+    svm_kernel_rbf_iris.fit(X_iris_train, Y_iris_train)
+    svm_kernel_poly_iris.fit(X_iris_train, Y_iris_train)
+    svm_kernel_sigmoid_iris.fit(X_iris_train, Y_iris_train)
+
+    linearA = svm_linear_iris.score(X_iris_test, Y_iris_test)
+    rbfA = svm_kernel_rbf_iris.score(X_iris_test, Y_iris_test)
+    polyA = svm_kernel_poly_iris.score(X_iris_test, Y_iris_test)
+    sigmoidA = svm_kernel_sigmoid_iris.score(X_iris_test, Y_iris_test)
+    print("The accuracy of iris dataset:\nLinear kernel: ", linearA, "\nRBF kernel: ", rbfA,
+          "\nPolynomial kernel: ", polyA, "\nSigmoid kernel: ", sigmoidA, "\n")
+
+    for lst in data_lst:
+        svm_linear = SVC(kernel='linear', gamma='auto')
+        svm_kernel_rbf = SVC(kernel='rbf', gamma='auto')
+        svm_kernel_poly = SVC(kernel='poly', gamma='auto')
+        svm_kernel_sigmoid = SVC(kernel='sigmoid', gamma='auto')
+
+        svm_linear.fit(lst[0],lst[1])
+        svm_kernel_rbf.fit(lst[0],lst[1])
+        svm_kernel_poly.fit(lst[0],lst[1])
+        svm_kernel_sigmoid.fit(lst[0],lst[1])
+
+        linearA=svm_linear.score(lst[2], lst[3])
+        rbfA=svm_kernel_rbf.score(lst[2], lst[3])
+        polyA=svm_kernel_poly.score(lst[2], lst[3])
+        sigmoidA = svm_kernel_sigmoid.score(lst[2], lst[3])
+        print("The accuracy of ",lst[4]," dataset:\nLinear kernel: ", linearA, "\nRBF kernel: ", rbfA, "\nPolynomial kernel: ",
+              polyA, "\nSigmoid kernel: ", sigmoidA, "\n")
+
+        plot_kernelSVM_result(svm_linear, lst[2], lst[3], lst[4]+"_linear_default")
+        plot_kernelSVM_result(svm_kernel_rbf, lst[2], lst[3], lst[4]+"_rbf_default")
+        plot_kernelSVM_result(svm_kernel_poly, lst[2], lst[3], lst[4]+"_polynomial_default")
+        plot_kernelSVM_result(svm_kernel_sigmoid, lst[2], lst[3], lst[4]+"_sigmoid_default")
+
+def plot_kernelSVM_result(svm_model, X, Y, picName):
+    xx, yy = np.meshgrid(np.linspace(-3, 3, 500),
+                         np.linspace(-3, 3, 500))
+
+    Z = svm_model.decision_function(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+
+    plt.imshow(Z, interpolation='nearest',
+               extent=(xx.min(), xx.max(), yy.min(), yy.max()), aspect='auto',
+               origin='lower', cmap=plt.cm.binary)
+    contours = plt.contour(xx, yy, Z, levels=[0], linewidths=2,
+                           linestyles='dashed')
+    plt.scatter(X[:, 0], X[:, 1], s=30, c=Y, cmap=plt.cm.binary,
+                edgecolors='k')
+    plt.xticks(())
+    plt.yticks(())
+    plt.axis([-3, 3, -3, 3])
+    plt.savefig(picName+'.png')
+    plt.show()
+
+if __name__ == "__main__":
+    main()
+    
+
+#위 코드를 실행해 얻은 결과:
+#The accuracy of MNIST dataset:
+#Linear kernel:  0.901 
+#RBF kernel:  0.78 
+#Polynomial kernel:  0.917 
+#Sigmoid kernel:  0.236 
+#The accuracy of iris dataset:
+#Linear kernel:  0.9333333333333333 
+#RBF kernel:  0.9333333333333333 
+#Polynomial kernel:  0.9666666666666667 
+#Sigmoid kernel:  0.03333333333333333 
+#The accuracy of  XOR  dataset:
+#Linear kernel:  0.5333333333333333 
+#RBF kernel:  0.9 
+#Polynomial kernel:  0.5 
+#Sigmoid kernel:  0.3333333333333333 
+#C:\Users\Nuree\Anaconda3\lib\site-packages\matplotlib\contour.py:1243: UserWarning: No contour levels were found within the data range.
+#  warnings.warn("No contour levels were found"
+#The accuracy of  AND  dataset:
+#Linear kernel:  0.9 
+#RBF kernel:  1.0 
+#Polynomial kernel:  0.9666666666666667 
+#Sigmoid kernel:  0.8333333333333334 
