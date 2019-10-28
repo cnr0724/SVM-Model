@@ -123,23 +123,21 @@ if __name__ == "__main__":
 #위 코드를 실행해 얻은 결과:
 #The accuracy of MNIST dataset:
 #Linear kernel:  0.901 
-#RBF kernel:  0.78 
-#Polynomial kernel:  0.917 
-#Sigmoid kernel:  0.236 
+#RBF kernel:  0.883 
+#Polynomial kernel:  0.127 
+#Sigmoid kernel:  0.855 
 #The accuracy of iris dataset:
-#Linear kernel:  0.9333333333333333 
+#Linear kernel:  0.9666666666666667 
+#RBF kernel:  0.9666666666666667 
+#Polynomial kernel:  1.0 
+#Sigmoid kernel:  0.06666666666666667 
+#The accuracy of  XOR  dataset:
+#Linear kernel:  0.6333333333333333 
+#RBF kernel:  0.9333333333333333 
+#Polynomial kernel:  0.7 
+#Sigmoid kernel:  0.4 
+#The accuracy of  AND  dataset:
+#Linear kernel:  0.8333333333333334 
 #RBF kernel:  0.9333333333333333 
 #Polynomial kernel:  0.9666666666666667 
-#Sigmoid kernel:  0.03333333333333333 
-#The accuracy of  XOR  dataset:
-#Linear kernel:  0.5333333333333333 
-#RBF kernel:  0.9 
-#Polynomial kernel:  0.5 
-#Sigmoid kernel:  0.3333333333333333 
-#C:\Users\Nuree\Anaconda3\lib\site-packages\matplotlib\contour.py:1243: UserWarning: No contour levels were found within the data range.
-#  warnings.warn("No contour levels were found"
-#The accuracy of  AND  dataset:
-#Linear kernel:  0.9 
-#RBF kernel:  1.0 
-#Polynomial kernel:  0.9666666666666667 
-#Sigmoid kernel:  0.8333333333333334 
+#Sigmoid kernel:  0.7333333333333333 
